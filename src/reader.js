@@ -1,9 +1,8 @@
-import { iterateElement, readElement } from "./nodeIterator";
+import { iterateElement, readElement, stopReading } from "./nodeIterator";
 import { defaultSettings } from './constants';
 
 const synth = window.speechSynthesis;
 
-let hasAutoRead = false;
 let readSettings = defaultSettings;
 
 document.onkeydown = (e) => {
@@ -11,10 +10,11 @@ document.onkeydown = (e) => {
   if (ctrlKey) {
     switch (keyCode) {
       case 82: // ctrl + R => read through
+        readElement(document.title, document.documentElement, readSettings);
         iterateElement(document.body, readSettings);
         break;
       case 83: // ctrl + S => stop
-        synth.cancel();
+        stopReading();
         break;
       case 80: // ctrl + P => play/pause
         synth.paused ? synth.resume() : synth.pause();
@@ -37,10 +37,6 @@ window.onload = () => {
   if (chrome && chrome.runtime) {
     chrome.runtime.sendMessage({ dom: document.domain }, (settings) => {
       readSettings = settings;
-      if (settings.autoRead && !hasAutoRead) {
-        hasAutoRead = true;
-        iterateElement(document.body, readSettings);
-      }
     });
     chrome.runtime.onMessage.addListener((settings) => {
       readSettings = settings;

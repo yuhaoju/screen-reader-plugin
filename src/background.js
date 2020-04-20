@@ -12,7 +12,7 @@ chrome.runtime.onInstalled.addListener(() => {
 });
 
 const settings = {
-  autoRead: false,
+  isEnabled: true,
   rate: 1,
   pitch: 1,
 };
@@ -27,7 +27,9 @@ chrome.runtime.onConnect.addListener((port) => {
     const { key, value } = JSON.parse(message);
     settings[key] = value;
     chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
-      chrome.tabs.sendMessage(tabs[0].id, settings);
+      if (tabs[0]) {
+        chrome.tabs.sendMessage(tabs[0].id, settings);
+      }
     });
   });
 });

@@ -1,5 +1,5 @@
 export const defaultSettings = {
-  autoRead: false,
+  isEnabled: false,
   rate: 1,
   pitch: 1,
 };

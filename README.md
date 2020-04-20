@@ -2,6 +2,7 @@
 
 ## Goals
 
-- Read through elements
-- Has a switch
-- Controls
+-[ ] Improve reading strategy
+-[x] Support navigate by tab
+-[ ] Stop reading when a tab is inactive
+-[ ] Support more configurations

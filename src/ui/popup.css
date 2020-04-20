@@ -10,7 +10,8 @@
 }
 
 .row .option-name {
-  min-width: 72px;
+  min-width: 30px;
+  margin-right: 15px;
 }
 
 .row .ant-slider {

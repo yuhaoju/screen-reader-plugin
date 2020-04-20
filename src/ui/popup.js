@@ -8,7 +8,7 @@ import './popup.css'
 // constants
 const EXTENSION_NAME = 'Screen Reader';
 const SCREEN_READER_PLUGIN_STATES = {
-  autoRead: 'autoRead',
+  isEnabled: 'isEnabled',
   pitch: 'pitch',
   rate: 'rate',
 }
@@ -21,15 +21,16 @@ const passMessage = (key, value) => {
 
 class App extends React.Component {
   state = {
-    autoRead: Boolean(localStorage.getItem(SCREEN_READER_PLUGIN_STATES.autoRead)) || false,
+    isEnabled: JSON.parse(localStorage.getItem(SCREEN_READER_PLUGIN_STATES.isEnabled)) !== null
+              ? JSON.parse(localStorage.getItem(SCREEN_READER_PLUGIN_STATES.isEnabled)) : true,
     rate: Number(localStorage.getItem(SCREEN_READER_PLUGIN_STATES.rate)) || 1,
     pitch: Number(localStorage.getItem(SCREEN_READER_PLUGIN_STATES.pitch)) || 1,
   };
 
-  handleSiwtchChange = (value) => {
-    this.setState({ autoRead: value });
-    passMessage(SCREEN_READER_PLUGIN_STATES.autoRead, value);
-    localStorage.setItem(SCREEN_READER_PLUGIN_STATES.autoRead, value);
+  handleEnabledStatusChange = (value) => {
+    this.setState({ isEnabled: value });
+    passMessage(SCREEN_READER_PLUGIN_STATES.isEnabled, value);
+    localStorage.setItem(SCREEN_READER_PLUGIN_STATES.isEnabled, value);
   };
 
   handleRateChange = (value) => {
@@ -45,12 +46,13 @@ class App extends React.Component {
   };
 
   render() {
-    const { autoRead, pitch, rate } = this.state;
+    const { isEnabled, pitch, rate } = this.state;
     return (
       <div className="container">
+        <h1>Settings</h1>
         <div className="row">
-          <span className="option-name">Auto-read</span>
-          <Switch checkedChildren="on" unCheckedChildren="off" checked={autoRead} onChange={this.handleSiwtchChange} />
+          <span className="option-name">Enable screen reader</span>
+          <Switch checkedChildren="on" unCheckedChildren="off" checked={isEnabled} onChange={this.handleEnabledStatusChange} />
         </div>
         <div className="row">
           <span className="option-name">Rate </span>
