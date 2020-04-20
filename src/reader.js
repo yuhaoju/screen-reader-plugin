@@ -1,9 +1,10 @@
 import { iterateElement } from "./nodeIterator";
+import { defaultSettings } from './constants';
 
 const synth = window.speechSynthesis;
 
 let hasAutoRead = false;
-let readSettings = {};
+let readSettings = defaultSettings;
 
 document.onkeydown = ({ keyCode, ctrlKey }) => {
   if (ctrlKey) {
@@ -24,14 +25,16 @@ document.onkeydown = ({ keyCode, ctrlKey }) => {
 };
 
 window.onload = () => {
-  chrome.runtime.sendMessage({ dom: document.domain }, (settings) => {
-    readSettings = settings;
-    if (settings.autoRead && !hasAutoRead) {
-      hasAutoRead = true;
-      iterateElement(document.body, readSettings);
-    }
-  });
-  chrome.runtime.onMessage.addListener((settings) => {
-    readSettings = settings;
-  });
+  if (chrome && chrome.runtime) {
+    chrome.runtime.sendMessage({ dom: document.domain }, (settings) => {
+      readSettings = settings;
+      if (settings.autoRead && !hasAutoRead) {
+        hasAutoRead = true;
+        iterateElement(document.body, readSettings);
+      }
+    });
+    chrome.runtime.onMessage.addListener((settings) => {
+      readSettings = settings;
+    });
+  }
 };

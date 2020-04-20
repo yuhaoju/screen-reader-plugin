@@ -24,7 +24,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 chrome.runtime.onConnect.addListener((port) => {
   port.onMessage.addListener((message) => {
     // handle settings change
-    console.log('receive message', message);
     const { key, value } = JSON.parse(message);
     settings[key] = value;
     chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
