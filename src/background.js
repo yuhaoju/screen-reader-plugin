@@ -10,3 +10,25 @@ chrome.runtime.onInstalled.addListener(() => {
     }]);
   });
 });
+
+const settings = {
+  autoRead: false,
+  rate: 1,
+  pitch: 1,
+};
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  console.log('connected', request);
+  sendResponse(settings);
+});
+
+chrome.runtime.onConnect.addListener((port) => {
+  port.onMessage.addListener((message) => {
+    // handle settings change
+    console.log('receive message', message);
+    const { key, value } = JSON.parse(message);
+    settings[key] = value;
+    chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
+      chrome.tabs.sendMessage(tabs[0].id, settings);
+    });
+  });
+});

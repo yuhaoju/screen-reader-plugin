@@ -1,9 +1,21 @@
 const synth = window.speechSynthesis;
 const Utterance = window.SpeechSynthesisUtterance;
 
+const SCREEN_READER_PLUGIN_STATES = {
+  autoRead: 'SCREEN_READER_PLUGIN_STATES/autoRead',
+  pitch: 'SCREEN_READER_PLUGIN_STATES/pitch',
+  rate: 'SCREEN_READER_PLUGIN_STATES/rate',
+}
+
+let hasAutoRead = false;
+let readSettings = {
+  autoRead: false,
+  rate: 1,
+  pitch: 1,
+};
 const readUtterance = (utterance) => {
-  utterance.rate = 1;
-  utterance.pitch = 1;
+  utterance.rate = readSettings.rate;
+  utterance.pitch = readSettings.pitch;
   synth.speak(utterance);
 }
 
@@ -32,7 +44,6 @@ const iterateElement = (rootElement) => {
 };
 
 document.onkeydown = ({ keyCode, ctrlKey }) => {
-  console.log('keyCode', keyCode);
   if (ctrlKey) {
     switch (keyCode) {
       case 82: // ctrl + R => read through
@@ -48,4 +59,17 @@ document.onkeydown = ({ keyCode, ctrlKey }) => {
         break;
     }
   }
+};
+
+window.onload = () => {
+  chrome.runtime.sendMessage({ dom: document.domain }, (settings) => {
+    readSettings = settings;
+    if (settings.autoRead && !hasAutoRead) {
+      hasAutoRead = true;
+      iterateElement(document.body);
+    }
+  });
+  chrome.runtime.onMessage.addListener((settings) => {
+    readSettings = settings;
+  });
 };
