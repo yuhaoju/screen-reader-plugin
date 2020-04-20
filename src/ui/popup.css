@@ -1,0 +1,19 @@
+.container {
+  width: 300px;
+  padding: 20px 20px 10px 20px;
+}
+
+.row {
+  display: flex;
+  flex-direction: row;
+  height: 42px;
+}
+
+.row .option-name {
+  min-width: 72px;
+}
+
+.row .ant-slider {
+  flex: 1;
+  padding: 0;
+}
