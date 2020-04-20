@@ -1,4 +1,4 @@
-import { iterateElement } from "./nodeIterator";
+import { iterateElement, readElement } from "./nodeIterator";
 import { defaultSettings } from './constants';
 
 const synth = window.speechSynthesis;
@@ -6,7 +6,8 @@ const synth = window.speechSynthesis;
 let hasAutoRead = false;
 let readSettings = defaultSettings;
 
-document.onkeydown = ({ keyCode, ctrlKey }) => {
+document.onkeydown = (e) => {
+  const { keyCode, ctrlKey } = e;
   if (ctrlKey) {
     switch (keyCode) {
       case 82: // ctrl + R => read through
@@ -21,6 +22,14 @@ document.onkeydown = ({ keyCode, ctrlKey }) => {
       default:
         break;
     }
+  }
+};
+
+document.body.onkeyup = (e) => {
+  const { keyCode } = e;
+  if (keyCode === 9) { //  TAB
+    const textContent = document.activeElement.innerText.trim();
+    readElement(textContent, document.activeElement, readSettings);
   }
 };
 

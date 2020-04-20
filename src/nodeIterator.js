@@ -11,7 +11,7 @@ const isElementInViewport = (element) => {
   );
 }
 
-const getEleementDescription = (rootElement) => {
+const getElementDescription = (rootElement) => {
   const { tagName } = rootElement;
   switch(tagName.toLowerCase()) {
     case 'a':
@@ -20,6 +20,8 @@ const getEleementDescription = (rootElement) => {
       return 'title';
     case 'h2':
       return 'sub title';
+    case 'input':
+      return `${rootElement.type}, ${rootElement.placeholder}`;
     default:
       return '';
   }
@@ -27,31 +29,34 @@ const getEleementDescription = (rootElement) => {
 
 const isElementShouldBeRead = (childNode, rootElement) => {
   const { tagName } = rootElement;
-  const tagsShouldBeRead = ['h1', 'h2', 'a', 'button'];
+  const tagsShouldBeRead = ['h1', 'h2', 'a', 'button', 'input'];
   return tagsShouldBeRead.includes(tagName.toLowerCase()) && isElementInViewport(rootElement)
 }
 
-export const iterateElement = (rootElement, settings) => {
-  const childNodes = rootElement.childNodes || [];
+export const readElement = (textContent, rootElement, settings = {}) => {
   const readOnstart = () => {
     rootElement.style.outline = '4px solid rgba(50, 132, 220, .6)';
   }
   const readOnend = () => {
     rootElement.style.outline = '';
   }
+  const utterance = new Utterance(`${textContent}, ${getElementDescription(rootElement)}`);
+  utterance.onstart = readOnstart;
+  utterance.onend = readOnend;
+  utterance.rate = settings.rate;
+  utterance.pitch = settings.pitch;
+  synth.speak(utterance);
+};
 
+export const iterateElement = (rootElement, settings) => {
+  const childNodes = rootElement.childNodes || [];
   childNodes.forEach((childNode) => {
     if (childNode.nodeType === Node.TEXT_NODE) {
       if (isElementShouldBeRead(childNode, rootElement)) {
         const textContent = childNode.textContent.trim();
         if (!textContent) return;
 
-        const utterance = new Utterance(`${textContent}, ${getEleementDescription(rootElement)}`);
-        utterance.onstart = readOnstart;
-        utterance.onend = readOnend;
-        utterance.rate = settings.rate;
-        utterance.pitch = settings.pitch;
-        synth.speak(utterance);
+        readElement(textContent, rootElement, settings);
       }
     } else if (childNode.nodeType === Node.ELEMENT_NODE) {
       iterateElement(childNode, settings)
