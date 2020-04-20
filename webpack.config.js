@@ -2,9 +2,12 @@ const htmlPlugin = require('html-webpack-plugin');
 const mode = process.env.MODE;
 
 module.exports = {
-  entry: './src/ui/popup.js',
+  entry: {
+    reader: './src/reader.js',
+    popup: './src/ui/popup.js',
+  },
   output: {
-    filename: 'popup.js',
+    filename: '[name].js',
   },
   mode: mode === 'DEV' ? 'development' : 'production',
   module: {
